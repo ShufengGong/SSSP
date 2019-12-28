@@ -54,7 +54,7 @@ public:
         option = option_;
 
         if (option->num_vertex == -1 || option->source == -1 || option->req_capacity == -1 || option->delta == -1 ||
-            option->delta_length == -1) {
+            option->delta_length == -1 || option->message_length < 2) {
             cout << "invalid paramete!" << endl;
             exit(0);
         }
@@ -161,8 +161,6 @@ public:
 //                log.flush();
 //                MPI_Barrier(MPI_COMM_WORLD);
                 //send and receive light req
-                int rec_size = gather_data(req_light_receiver, size_light_receiver, req_light_sender, capacity,
-                                           num_task, rank, option->message_length);
 //                int *recv_count = new int[num_task];
 //                for (int j = 0; j < num_task; j++) {
 //                    MPI_Gather(&size_light_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
@@ -194,6 +192,8 @@ public:
 //                log << rank << " receivedddd light req " << endl;
 //                log.flush();
 //                MPI_Barrier(MPI_COMM_WORLD);
+                int rec_size = gather_data(req_light_receiver, size_light_receiver, req_light_sender, capacity,
+                                           num_task, rank, option->message_length);
                 if (rec_size != 0) {
                     for (int j = 0; j < rec_size; j++) {
                         pair<int, float> neighbor = req_light_sender[j];

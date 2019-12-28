@@ -59,7 +59,7 @@ public:
         option = option_;
 
         if (option->num_vertex == -1 || option->source == -1 || option->req_capacity == -1 || option->delta == -1 ||
-            option->delta_length == -1) {
+            option->delta_length == -1 || option->message_length < 2) {
             cout << "invalid paramete!" << endl;
             exit(0);
         }
@@ -135,33 +135,35 @@ public:
                 }
                 MPI_Barrier(MPI_COMM_WORLD);
                 //send and receive light req
-                int *recv_count = new int[num_task];
-                for (int j = 0; j < num_task; j++) {
-                    MPI_Gather(&size_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
-                }
-
-                int *displs = new int[num_task];
-                displs[0] = 0;
-                int rec_size = recv_count[0];
-                recv_count[0] *= sizeof(pair<int, float>);
-                for (int j = 1; j < num_task; j++) {
-                    rec_size += recv_count[j];
-                    recv_count[j] *= sizeof(pair<int, float>);
-                    displs[j] = displs[j - 1] + recv_count[j - 1];
-                }
-
-                if (rec_size >= capacity_syn) {
-                    cout << "the syn req receiver is larger than capacity, become " << rec_size + 1 << endl;
-                    delete[] req_sender;
-                    capacity_syn = rec_size + 1;
-                    req_sender = new pair<int, float>[capacity_syn];
-                }
-
-                MPI_Barrier(MPI_COMM_WORLD);
-                for (int j = 0; j < num_task; j++) {
-                    MPI_Gatherv(req_receiver[j], size_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
-                                req_sender, recv_count, displs, MPI_BYTE, j, MPI_COMM_WORLD);
-                }
+//                int *recv_count = new int[num_task];
+//                for (int j = 0; j < num_task; j++) {
+//                    MPI_Gather(&size_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
+//                }
+//
+//                int *displs = new int[num_task];
+//                displs[0] = 0;
+//                int rec_size = recv_count[0];
+//                recv_count[0] *= sizeof(pair<int, float>);
+//                for (int j = 1; j < num_task; j++) {
+//                    rec_size += recv_count[j];
+//                    recv_count[j] *= sizeof(pair<int, float>);
+//                    displs[j] = displs[j - 1] + recv_count[j - 1];
+//                }
+//
+//                if (rec_size >= capacity_syn) {
+//                    cout << "the syn req receiver is larger than capacity, become " << rec_size + 1 << endl;
+//                    delete[] req_sender;
+//                    capacity_syn = rec_size + 1;
+//                    req_sender = new pair<int, float>[capacity_syn];
+//                }
+//
+//                MPI_Barrier(MPI_COMM_WORLD);
+//                for (int j = 0; j < num_task; j++) {
+//                    MPI_Gatherv(req_receiver[j], size_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
+//                                req_sender, recv_count, displs, MPI_BYTE, j, MPI_COMM_WORLD);
+//                }
+                int rec_size = gather_data(req_receiver, size_receiver, req_sender, capacity_syn, num_task, rank,
+                                           option->message_length);
                 for (int j = 0; j < rec_size; j++) {
                     pair<int, float> neighbor = req_sender[j];
                     int index = neighbor.first;

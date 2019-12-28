@@ -55,7 +55,7 @@ public:
         option = option_;
 
         if (option->num_vertex == -1 || option->source == -1 || option->req_capacity == -1 || option->delta == -1 ||
-            option->delta_length == -1) {
+            option->delta_length == -1 || option->message_length < 2) {
             cout << "invalid paramete!" << endl;
             exit(0);
         }
