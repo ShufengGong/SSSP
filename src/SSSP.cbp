@@ -27,6 +27,16 @@
 					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/gongsf/program/SSSP"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="src/test">
 				<Option output="/home/gongsf/program/SSSP/src/test" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/gongsf/program/SSSP"/>
@@ -65,17 +75,92 @@
 					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="edit_cache">
+			<Target title="src/deltaab">
+				<Option output="/home/gongsf/program/SSSP/src/deltaab" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/gongsf/program/SSSP"/>
-				<Option type="4"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
+				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<Build command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 src/deltaab"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="src/deltaab/fast">
+				<Option output="/home/gongsf/program/SSSP/src/deltaab" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/gongsf/program/SSSP"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 src/deltaab/fast"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="src/deltastep">
+				<Option output="/home/gongsf/program/SSSP/src/deltastep" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/gongsf/program/SSSP"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 src/deltastep"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="src/deltastep/fast">
+				<Option output="/home/gongsf/program/SSSP/src/deltastep" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/gongsf/program/SSSP"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include/openmpi/opal/mca/event/libevent2022/libevent/include"/>
+					<Add directory="/usr/lib/x86_64-linux-gnu/openmpi/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 src/deltastep/fast"/>
 					<CompileFile command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -f &quot;/home/gongsf/program/SSSP/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/gongsf/program/SSSP/src/delta_ab_dis.cpp">
+			<Option target="src/deltaab"/>
+		</Unit>
+		<Unit filename="/home/gongsf/program/SSSP/src/delta_ab_dis.hpp">
+			<Option target="src/deltaab"/>
+		</Unit>
+		<Unit filename="/home/gongsf/program/SSSP/src/delta_step.cpp">
+			<Option target="src/deltastep"/>
+		</Unit>
 		<Unit filename="/home/gongsf/program/SSSP/src/test.cpp">
 			<Option target="src/test"/>
 		</Unit>

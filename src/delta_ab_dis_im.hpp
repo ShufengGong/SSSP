@@ -136,9 +136,6 @@ public:
                 MPI_Barrier(MPI_COMM_WORLD);
                 //send and receive light req
                 int *recv_count = new int[num_task];
-
-
-
                 for (int j = 0; j < num_task; j++) {
                     MPI_Gather(&size_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
                 }

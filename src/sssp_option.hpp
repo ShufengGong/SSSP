@@ -29,6 +29,7 @@ namespace sssp {
 
         float delta = -1; // for delta step method
         int delta_length = -1;
+        int message_length = -1;
 
         int iter_time = -1; //for bellman-ford
 
@@ -48,7 +49,8 @@ namespace sssp {
                     ("delta_length", boost::program_options::value<int>(&delta_length), "delta lenght")
                     ("num_task", boost::program_options::value<int>(&num_task), "num of task")
                     ("req_capacity", boost::program_options::value<int>(&req_capacity), "the capacity of req")
-                    ("iter_time", boost::program_options::value<int>(&iter_time), "the iteration times of bellman-ford");
+                    ("iter_time", boost::program_options::value<int>(&iter_time), "the iteration times of bellman-ford")
+                    ("message_length", boost::program_options::value<int>(&message_length), "the length of message");
 
         }
 

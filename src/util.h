@@ -37,19 +37,19 @@ void set_weight(int argc, char *argv[]) {
     ifstream infile(input.c_str());
     if (infile.is_open()) {
         string line;
-        for (int i = 0; getline(infile, line);i++) {
+        for (int i = 0; getline(infile, line); i++) {
 
             int src;
             infile >> src;
-            if(src > max){
+            if (src > max) {
                 max = src;
             }
             int des;
-            infile >> des ;
-            if(des > max){
+            infile >> des;
+            if (des > max) {
                 max = des;
             }
-            float value =  ((float)rand() / RAND_MAX) * 10;
+            float value = ((float) rand() / RAND_MAX) * 10;
             if (value <= 0) {
                 cout << "0000" << endl;
                 break;
@@ -93,12 +93,12 @@ void convert(int argc, char *argv[]) {
     graph->graph_dump(output);
 }
 
-void extract(int argc, char *argv[]){
+void extract(int argc, char *argv[]) {
     string input;
     string output;
     int vertex_num = -1;
     int max_id = -1;
-    for(int i = 0; i < argc; i++){
+    for (int i = 0; i < argc; i++) {
         string arg = argv[i];
         if (arg == "--in") {
             input = argv[++i];
@@ -112,7 +112,7 @@ void extract(int argc, char *argv[]){
             vertex_num = atoi(argv[++i]);
         }
 
-        if(arg == "--max_id"){
+        if (arg == "--max_id") {
             max_id = atoi(argv[++i]);
         }
     }
@@ -122,17 +122,19 @@ void extract(int argc, char *argv[]){
     graph->graph_extract_dump(output, max_id);
 }
 
-void atomic_update(tbb::atomic<float>& val, float y) noexcept{
-    tbb::atomic<float>& pre_val = val;
-    do{
+void atomic_update(tbb::atomic<float> &val, float y) noexcept {
+    tbb::atomic<float> &pre_val = val;
+    do {
 //        cout << "tt" << endl;
-        if(pre_val <= y){
+        if (pre_val <= y) {
             break;
         }
-    }while(val.compare_and_swap(y, pre_val) != pre_val) ;
+    } while (val.compare_and_swap(y, pre_val) != pre_val);
 }
 
-int gather_data(vector<pair<int, float> *> &send_buffer, int send_size[], pair<int, float> *rec_buffer, int rec_capacity, int num_task, int rank, int message_length){
+int
+gather_data(vector<pair<int, float> *> &send_buffer, int send_size[], pair<int, float> *rec_buffer, int rec_capacity,
+            int num_task, int rank, int message_length) {
     int receive_size;
     for (int i = 0; i < num_task; i++) {
         int *rec_count = new int[num_task];
@@ -145,12 +147,12 @@ int gather_data(vector<pair<int, float> *> &send_buffer, int send_size[], pair<i
         for (int j = 0; j < num_task; j++) {
             rec_size += rec_count[j];
 
-            if(max_rec < rec_count[j]){
+            if (max_rec < rec_count[j]) {
                 max_rec = rec_count[j];
             }
         }
 
-        if(i == rank){
+        if (i == rank) {
             receive_size = rec_size;
         }
 
@@ -162,45 +164,49 @@ int gather_data(vector<pair<int, float> *> &send_buffer, int send_size[], pair<i
         MPI_Barrier(MPI_COMM_WORLD);
 
         int iter_time = max_rec / message_length;
-        if(max_rec % message_length != 0){
+        if (max_rec % message_length != 0) {
             iter_time++;
         }
         int offset = 0;
-        for(int j = 0; j < iter_time; j++){
+        int *displs = new int[num_task];
+        int *rec_count_size = new int[num_task];
+        int *current_rec_count = new int[num_task];
+        for (int j = 0; j < iter_time; j++) {
             int end = (j + 1) * message_length;
-            int *displs = new int[num_task];
-            int *rec_count_size = new int[num_task];
-            int *current_rec_count = new int[num_task];
+
             int sum = 0;
             displs[0] = 0;
-            if(rec_count[0] >= end){
+            if (rec_count[0] >= end) {
                 current_rec_count[0] = message_length;
-            }else if(rec_count[0] > (end - message_length)){
+            } else if (rec_count[0] > (end - message_length)) {
                 current_rec_count[0] = rec_count[0] - (end - message_length);
-            }else{
+            } else {
                 current_rec_count[0] = 0;
             }
             sum += current_rec_count[0];
             rec_count_size[0] = current_rec_count[0] * sizeof(pair<int, float>);
-            for(int k = 1; k < num_task; k++) {
+            for (int k = 1; k < num_task; k++) {
                 displs[k] = displs[k - 1] + rec_count_size[k - 1];
-                if(rec_count[k] >= end){
+                if (rec_count[k] >= end) {
                     current_rec_count[k] = message_length;
-                }else if(rec_count[k] > (end - message_length)){
+                } else if (rec_count[k] > (end - message_length)) {
                     current_rec_count[k] = rec_count[k] - (end - message_length);
-                }else{
+                } else {
                     current_rec_count[k] = 0;
                 }
                 sum += current_rec_count[k];
                 rec_count_size[k] = current_rec_count[k] * sizeof(pair<int, float>);
             }
 
-            MPI_Gatherv(&send_buffer[i][j*message_length], current_rec_count[rank] * sizeof(pair<int, float>), MPI_BYTE,
+            MPI_Gatherv(&send_buffer[i][j * message_length], current_rec_count[rank] * sizeof(pair<int, float>),
+                        MPI_BYTE,
                         &rec_buffer[offset], rec_count_size, displs, MPI_BYTE, i, MPI_COMM_WORLD);
             offset += sum;
         }
-
-
+        delete[] displs;
+        delete[] rec_count_size;
+        delete[] current_rec_count;
+        delete[] rec_count;
     }
     return receive_size;
 }

@@ -121,13 +121,13 @@ public:
                          it_ != bucket[i].end(); it_++) {
                         int v = *it_;
 //                        if(!stable[v]){
-                            float val = tent[v];
-                            int v_host = v % num_task;
-                            req_receiver[v_host][size_receiver[v_host]++] = make_pair(v, val);
-                            if (size_receiver[v_host] >= capacity_req) {
-                                cout << "light capacity is not enough " << size_receiver[v_host] << endl;
-                                exit(0);
-                            }
+                        float val = tent[v];
+                        int v_host = v % num_task;
+                        req_receiver[v_host][size_receiver[v_host]++] = make_pair(v, val);
+                        if (size_receiver[v_host] >= capacity_req) {
+                            cout << "light capacity is not enough " << size_receiver[v_host] << endl;
+                            exit(0);
+                        }
 //                        }
                     }
                     bucket[i].clear();
@@ -136,37 +136,39 @@ public:
 //                log.flush();
                 MPI_Barrier(MPI_COMM_WORLD);
                 //send and receive light req
-                int *recv_count = new int[num_task];
-                for (int j = 0; j < num_task; j++) {
-                    MPI_Gather(&size_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
-                }
-
-                int *displs = new int[num_task];
-                displs[0] = 0;
-                int rec_size = recv_count[0];
-                recv_count[0] *= sizeof(pair<int, float>);
-                for (int j = 1; j < num_task; j++) {
-                    rec_size += recv_count[j];
-                    recv_count[j] *= sizeof(pair<int, float>);
-                    displs[j] = displs[j - 1] + recv_count[j - 1];
-                }
-//                log << rank << " receive req" << endl;
-//                log.flush();
-                MPI_Barrier(MPI_COMM_WORLD);
-                for (int j = 0; j < num_task; j++) {
-//                    if (rec_size != 0) {
-                    MPI_Gatherv(req_receiver[j], size_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
-                                req_sender, recv_count, displs, MPI_BYTE, j, MPI_COMM_WORLD);
-//                    }
-                }
+//                int *recv_count = new int[num_task];
+//                for (int j = 0; j < num_task; j++) {
+//                    MPI_Gather(&size_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
+//                }
+//
+//                int *displs = new int[num_task];
+//                displs[0] = 0;
+//                int rec_size = recv_count[0];
+//                recv_count[0] *= sizeof(pair<int, float>);
+//                for (int j = 1; j < num_task; j++) {
+//                    rec_size += recv_count[j];
+//                    recv_count[j] *= sizeof(pair<int, float>);
+//                    displs[j] = displs[j - 1] + recv_count[j - 1];
+//                }
+////                log << rank << " receive req" << endl;
+////                log.flush();
+//                MPI_Barrier(MPI_COMM_WORLD);
+//                for (int j = 0; j < num_task; j++) {
+////                    if (rec_size != 0) {
+//                    MPI_Gatherv(req_receiver[j], size_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
+//                                req_sender, recv_count, displs, MPI_BYTE, j, MPI_COMM_WORLD);
+////                    }
+//                }
 //                log << rank << " receivedddd req " << rec_size << endl;
 //                log.flush();
 //                MPI_Barrier(MPI_COMM_WORLD);
+                int rec_size = gather_data(req_receiver, size_receiver, req_sender, capacity_req, num_task, rank,
+                                           option->message_length);
                 for (int j = 0; j < rec_size; j++) {
                     pair<int, float> neighbor = req_sender[j];
                     int index = neighbor.first;
                     stable_set[size_stable_set++] = index;
-                    if(size_stable_set >= capacity_req){
+                    if (size_stable_set >= capacity_req) {
                         cout << "the capacity is not enough" << endl;
                         exit(0);
                     }
@@ -191,16 +193,16 @@ public:
                         pair<int, float> neighbor = *it;
                         int k = neighbor.first;
 //                        if (!stable[k]) {
-                            float val = neighbor.second + tent[index];
-                            if (tent[k] > val) {
-                                if (tent[k] != numeric_limits<float>::max()) {
-                                    int b_index_old = (int) floor(tent[k] / delta);
-                                    bucket[b_index_old].erase(neighbor.first);
-                                }
-                                tent[k] = val;
-                                int b_index_new = (int) floor(tent[k] / delta);
-                                bucket[b_index_new].insert(neighbor.first);
+                        float val = neighbor.second + tent[index];
+                        if (tent[k] > val) {
+                            if (tent[k] != numeric_limits<float>::max()) {
+                                int b_index_old = (int) floor(tent[k] / delta);
+                                bucket[b_index_old].erase(neighbor.first);
                             }
+                            tent[k] = val;
+                            int b_index_new = (int) floor(tent[k] / delta);
+                            bucket[b_index_new].insert(neighbor.first);
+                        }
 //                        }
                     }
                 }
@@ -268,7 +270,7 @@ public:
             cout << tent.size() << endl;
             for (int i = 0; i < graph->size; i++) {
                 outfile << graph->vertices[i]->id << " ";
-                outfile << tent[ graph->vertices[i]->id] << endl;
+                outfile << tent[graph->vertices[i]->id] << endl;
             }
         } else {
             cout << "not able to open file: " << outpath << endl;

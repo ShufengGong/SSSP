@@ -111,7 +111,7 @@ public:
 //            log << rank << " iter " << i << endl;
 //            cout << rank << " iter " << i << endl;
             MPI_Barrier(MPI_COMM_WORLD);
-            if(is_all_empty(bucket[i].size())){
+            if (is_all_empty(bucket[i].size())) {
                 continue;
             }
             for (int j = 0; j < num_task; j++) {
@@ -161,34 +161,36 @@ public:
 //                log.flush();
 //                MPI_Barrier(MPI_COMM_WORLD);
                 //send and receive light req
-                int *recv_count = new int[num_task];
-                for (int j = 0; j < num_task; j++) {
-                    MPI_Gather(&size_light_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
-                }
-
-                int *displs = new int[num_task];
-                displs[0] = 0;
-                int rec_size = recv_count[0];
-                recv_count[0] *= sizeof(pair<int, float>);
-                for (int j = 1; j < num_task; j++) {
-                    rec_size += recv_count[j];
-                    recv_count[j] *= sizeof(pair<int, float>);
-                    displs[j] = displs[j - 1] + recv_count[j - 1];
-                }
-//                log << rank << " receive light req" << endl;
-//                log.flush();
-                if(rec_size >= capacity){
-                    capacity = rec_size + 1;
-                    delete[] req_light_sender;
-                    req_light_sender = new pair<int, float>[capacity];
-                }
-                MPI_Barrier(MPI_COMM_WORLD);
-                for (int j = 0; j < num_task; j++) {
-//                    if (rec_size != 0) {
-                    MPI_Gatherv(req_light_receiver[j], size_light_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
-                                req_light_sender, recv_count, displs, MPI_BYTE, j, MPI_COMM_WORLD);
-//                    }
-                }
+                int rec_size = gather_data(req_light_receiver, size_light_receiver, req_light_sender, capacity,
+                                           num_task, rank, option->message_length);
+//                int *recv_count = new int[num_task];
+//                for (int j = 0; j < num_task; j++) {
+//                    MPI_Gather(&size_light_receiver[j], 1, MPI_INT, recv_count, 1, MPI_INT, j, MPI_COMM_WORLD);
+//                }
+//
+//                int *displs = new int[num_task];
+//                displs[0] = 0;
+//                int rec_size = recv_count[0];
+//                recv_count[0] *= sizeof(pair<int, float>);
+//                for (int j = 1; j < num_task; j++) {
+//                    rec_size += recv_count[j];
+//                    recv_count[j] *= sizeof(pair<int, float>);
+//                    displs[j] = displs[j - 1] + recv_count[j - 1];
+//                }
+////                log << rank << " receive light req" << endl;
+////                log.flush();
+//                if(rec_size >= capacity){
+//                    capacity = rec_size + 1;
+//                    delete[] req_light_sender;
+//                    req_light_sender = new pair<int, float>[capacity];
+//                }
+//                MPI_Barrier(MPI_COMM_WORLD);
+//                for (int j = 0; j < num_task; j++) {
+////                    if (rec_size != 0) {
+//                    MPI_Gatherv(req_light_receiver[j], size_light_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
+//                                req_light_sender, recv_count, displs, MPI_BYTE, j, MPI_COMM_WORLD);
+////                    }
+//                }
 //                log << rank << " receivedddd light req " << endl;
 //                log.flush();
 //                MPI_Barrier(MPI_COMM_WORLD);
@@ -223,34 +225,8 @@ public:
                 MPI_Barrier(MPI_COMM_WORLD);
             }
             //send and receive heavy req
-//            cout << "update heavy req" << endl;
-            int *recv_heavy_count = new int[num_task];
-            for (int j = 0; j < num_task; j++) {
-                MPI_Gather(&size_heavy_receiver[j], 1, MPI_INT, recv_heavy_count, 1, MPI_INT, j, MPI_COMM_WORLD);
-            }
-
-            int *heavy_displs = new int[num_task];
-            heavy_displs[0] = 0;
-            int rec_size = recv_heavy_count[0];
-            recv_heavy_count[0] *= sizeof(pair<int, float>);
-            for (int j = 1; j < num_task; j++) {
-                rec_size += recv_heavy_count[j];
-                recv_heavy_count[j] *= sizeof(pair<int, float>);
-                heavy_displs[j] = heavy_displs[j - 1] + recv_heavy_count[j - 1];
-            }
-            if(rec_size >= capacity){
-                cout << rank << " not have enough capacity for receiver heavy req" << endl;
-                delete[] req_heavy_sender;
-                req_heavy_sender = new pair<int, float>[(int)ceil(rec_size * 1.2)];
-                cout << "ectend capacity" << endl;
-            }
-
-            MPI_Barrier(MPI_COMM_WORLD);
-
-            for (int j = 0; j < num_task; j++) {
-                MPI_Gatherv(req_heavy_receiver[j], size_heavy_receiver[j] * sizeof(pair<int, float>), MPI_BYTE,
-                            req_heavy_sender, recv_heavy_count, heavy_displs, MPI_BYTE, j, MPI_COMM_WORLD);
-            }
+            int rec_size = gather_data(req_heavy_receiver, size_heavy_receiver, req_heavy_sender, capacity, num_task,
+                                       rank, option->message_length);
 
             if (rec_size != 0) {
                 for (int j = 0; j < rec_size; j++) {
