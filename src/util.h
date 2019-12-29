@@ -132,9 +132,8 @@ void atomic_update(tbb::atomic<float> &val, float y) noexcept {
     } while (val.compare_and_swap(y, pre_val) != pre_val);
 }
 
-int
-gather_data(vector<pair<int, float> *> &send_buffer, int send_size[], pair<int, float> *rec_buffer, int rec_capacity,
-            int num_task, int rank, int message_length) {
+int gather_data(vector<pair<int, float> *> &send_buffer, int send_size[], pair<int, float> *rec_buffer,
+        int rec_capacity, int num_task, int rank, int message_length) {
     int receive_size;
     for (int i = 0; i < num_task; i++) {
         int *rec_count = new int[num_task];
